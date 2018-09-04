@@ -6,6 +6,7 @@ use App\Entity\Admin;
 use App\Entity\Article;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -17,8 +18,9 @@ class ArticleType extends AbstractType
     {
         $builder
             ->add('title', TextType::class, [
-                'is_granted_attribute' => 'ROLE_ADMIN',
                 'is_granted_disabled' => $options['is_granted_disabled'],
+                'is_granted_attribute' => 'ARTICLE_EDIT',
+                'is_granted_subject_path' => 'parent.data',
             ])
             ->add('content', TextareaType::class)
             ->add('internalNote', TextType::class, [
@@ -26,6 +28,11 @@ class ArticleType extends AbstractType
                 'is_granted_hide' => true,
                 'is_granted_disabled' => $options['is_granted_disabled'],
                 'required' => false,
+            ])
+            ->add('category', ChoiceType::class, [
+                'choices' => array_combine(Article::CATEGORIES, Article::CATEGORIES),
+                'is_granted_attribute' => 'ROLE_ADMIN',
+                'is_granted_disabled' => $options['is_granted_disabled'],
             ])
             ->add('author', EntityType::class, [
                 'class' => Admin::class,

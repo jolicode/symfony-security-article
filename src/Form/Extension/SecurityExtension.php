@@ -10,15 +10,18 @@ use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 class SecurityExtension extends AbstractTypeExtension
 {
     private $authorizationChecker;
+    private $propertyAccessor;
 
-    public function __construct(AuthorizationCheckerInterface $authorizationChecker)
+    public function __construct(AuthorizationCheckerInterface $authorizationChecker, PropertyAccessorInterface $propertyAccessor)
     {
         $this->authorizationChecker = $authorizationChecker;
+        $this->propertyAccessor = $propertyAccessor;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -33,21 +36,23 @@ class SecurityExtension extends AbstractTypeExtension
 
         if ($options['is_granted_hide']) {
             $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) use ($options) {
-                if ($this->isGranted($options)) {
+                $form = $event->getForm();
+
+                if ($this->isGranted($options, $form)) {
                     return;
                 }
-
-                $form = $event->getForm();
 
                 $form->getParent()->remove($form->getName());
             });
         } else {
             $builder->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event) use ($options) {
-                if ($this->isGranted($options)) {
+                $form = $event->getForm();
+
+                if ($this->isGranted($options, $form)) {
                     return;
                 }
 
-                $event->setData($event->getForm()->getViewData());
+                $event->setData($form->getViewData());
             });
         }
     }
@@ -58,7 +63,7 @@ class SecurityExtension extends AbstractTypeExtension
             return;
         }
 
-        if ($this->isGranted($options)) {
+        if ($this->isGranted($options, $form)) {
             return;
         }
 
@@ -69,6 +74,7 @@ class SecurityExtension extends AbstractTypeExtension
     {
         $resolver->setDefaults([
             'is_granted_attribute' => null,
+            'is_granted_subject_path' => null,
             'is_granted_hide' => false,
             'is_granted_disabled' => false,
         ]);
@@ -79,13 +85,19 @@ class SecurityExtension extends AbstractTypeExtension
         return FormType::class;
     }
 
-    private function isGranted(array $options)
+    private function isGranted(array $options, FormInterface $form)
     {
         if (!$options['is_granted_attribute']) {
             return true;
         }
 
-        if ($this->authorizationChecker->isGranted($options['is_granted_attribute'])) {
+        $subject = null;
+
+        if ($options['is_granted_subject_path']) {
+            $subject = $this->propertyAccessor->getValue($form, $options['is_granted_subject_path']);
+        }
+
+        if ($this->authorizationChecker->isGranted($options['is_granted_attribute'], $subject)) {
             return true;
         }
 

@@ -17,7 +17,7 @@ class AppFixtures extends Fixture
 
         $admin = new Admin();
         $admin->setName('alice');
-        $admin->setRoles(['ROLE_EDITOR']);
+        $admin->setRoles(['ROLE_EDITOR', 'ROLE_ARTICLE_CATEGORY_PHP']);
         $manager->persist($admin);
 
         $manager->flush();

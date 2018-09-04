@@ -10,6 +10,13 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Article
 {
+    const CATEGORIES = [
+        'Default',
+        'PHP',
+        'Golang',
+        'Ops',
+    ];
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -40,6 +47,11 @@ class Article
      * @Assert\Length(max = 255)
      */
     private $internalNote;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $category;
 
     public function getId(): ?int
     {
@@ -90,6 +102,18 @@ class Article
     public function setInternalNote(?string $internalNote): self
     {
         $this->internalNote = $internalNote;
+
+        return $this;
+    }
+
+    public function getCategory(): ?string
+    {
+        return $this->category;
+    }
+
+    public function setCategory(string $category): self
+    {
+        $this->category = $category;
 
         return $this;
     }
