@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello!{% endblock %}
+
+{% block body %}
+    <ul>
+        <li>
+            <a href="{{ url('admin_index') }}">Admin CRUD</a>
+        </li>
+        <li>
+            <a href="{{ url('article_index') }}">Article CRUD</a>
+        </li>
+    </ul>
+{% endblock %}
