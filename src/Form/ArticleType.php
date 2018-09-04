@@ -20,6 +20,11 @@ class ArticleType extends AbstractType
                 'is_granted_attribute' => 'ROLE_ADMIN',
             ])
             ->add('content', TextareaType::class)
+            ->add('internalNote', TextType::class, [
+                'is_granted_attribute' => 'ROLE_ADMIN',
+                'is_granted_hide' => true,
+                'required' => false,
+            ])
             ->add('author', EntityType::class, [
                 'class' => Admin::class,
                 'choice_label' => function (Admin $admin) {

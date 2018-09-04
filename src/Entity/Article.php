@@ -35,6 +35,12 @@ class Article
      */
     private $author;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Assert\Length(max = 255)
+     */
+    private $internalNote;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -72,6 +78,18 @@ class Article
     public function setAuthor(?Admin $author): self
     {
         $this->author = $author;
+
+        return $this;
+    }
+
+    public function getInternalNote(): ?string
+    {
+        return $this->internalNote;
+    }
+
+    public function setInternalNote(?string $internalNote): self
+    {
+        $this->internalNote = $internalNote;
 
         return $this;
     }

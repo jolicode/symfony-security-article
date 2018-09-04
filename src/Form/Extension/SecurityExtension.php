@@ -27,13 +27,25 @@ class SecurityExtension extends AbstractTypeExtension
             return;
         }
 
-        $builder->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event) use ($options) {
-            if ($this->isGranted($options)) {
-                return;
-            }
+        if ($options['is_granted_hide']) {
+            $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) use ($options) {
+                if ($this->isGranted($options)) {
+                    return;
+                }
 
-            $event->setData($event->getForm()->getViewData());
-        });
+                $form = $event->getForm();
+
+                $form->getParent()->remove($form->getName());
+            });
+        } else {
+            $builder->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event) use ($options) {
+                if ($this->isGranted($options)) {
+                    return;
+                }
+
+                $event->setData($event->getForm()->getViewData());
+            });
+        }
     }
 
     public function finishView(FormView $view, FormInterface $form, array $options)
@@ -49,6 +61,7 @@ class SecurityExtension extends AbstractTypeExtension
     {
         $resolver->setDefaults([
             'is_granted_attribute' => null,
+            'is_granted_hide' => false,
         ]);
     }
 
