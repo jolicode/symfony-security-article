@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Admin;
 use App\Entity\Article;
+use App\Security\RoleMapping;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -11,9 +12,17 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class ArticleType extends AbstractType
 {
+    private $tokenStorage;
+
+    public function __construct(TokenStorageInterface $tokenStorage)
+    {
+        $this->tokenStorage = $tokenStorage;
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
@@ -30,15 +39,9 @@ class ArticleType extends AbstractType
                 'required' => false,
             ])
             ->add('category', ChoiceType::class, [
-                'choices' => array_combine(Article::CATEGORIES, Article::CATEGORIES),
+                'choices' => $this->buildCategoryChoices(),
                 'is_granted_attribute' => 'ROLE_ADMIN',
                 'is_granted_disabled' => $options['is_granted_disabled'],
-            ])
-            ->add('author', EntityType::class, [
-                'class' => Admin::class,
-                'choice_label' => function (Admin $admin) {
-                    return $admin->getName();
-                },
             ])
         ;
     }
@@ -49,5 +52,33 @@ class ArticleType extends AbstractType
             'data_class' => Article::class,
             'is_granted_disabled' => false,
         ]);
+    }
+
+    private function buildCategoryChoices(): array
+    {
+        $token = $this->tokenStorage->getToken();
+        if (!$token) {
+            return [];
+        }
+
+        $admin = $token->getUser();
+        if (!$admin instanceof Admin) {
+            return [];
+        }
+
+        $roles = $admin->getRoles();
+        if (\in_array('ROLE_ADMIN', $roles, true)) {
+            return array_combine(Article::CATEGORIES, Article::CATEGORIES);
+        }
+
+        $categories = [];
+
+        foreach (RoleMapping::ARTICLE as $category => $role) {
+            if (\in_array($role, $roles, true)) {
+                $categories[]  = $category;
+            }
+        }
+
+        return array_combine($categories, $categories);
     }
 }

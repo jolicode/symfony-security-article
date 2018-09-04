@@ -53,6 +53,11 @@ class Article
      */
     private $category;
 
+    public function __construct(Admin $author)
+    {
+        $this->author = $author;
+    }
+
     public function getId(): ?int
     {
         return $this->id;

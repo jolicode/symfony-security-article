@@ -7,15 +7,19 @@
         <div>{{ error.messageKey|trans(error.messageData, 'security') }}</div>
     {% endif %}
 
-    <form action="{{ path('login') }}" method="post" class="form-inline">
-        <label for="username" class="sr-only" >User</label>
-        <select class="form-control mr-sm-2" id="username" name="_username">
-            <option value="alice">Alice (ROLE_EDITOR)</option>
-            <option value="greg">Greg (ROLE_ADMIN)</option>
-        </select>
-
-        <input type="hidden" id="password" name="_password" value="password"/>
-
-        <button type="submit" class="btn btn-primary">Login</button>
-    </form>
+    <table class="table">
+        {% for admin in admins %}
+            <tr>
+                <td>{{ admin.name }}</td>
+                <td>{{ admin.roles|join(', ') }}</td>
+                <td>
+                    <form action="{{ path('login') }}" method="post" class="form-inline">
+                        <input type="hidden" id="username" name="_username" value="{{ admin.name }}"/>
+                        <input type="hidden" id="password" name="_password" value="password"/>
+                        <button type="submit" class="btn btn-primary">Login</button>
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
 {% endblock %}

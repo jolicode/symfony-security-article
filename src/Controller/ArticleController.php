@@ -28,7 +28,7 @@ class ArticleController extends AbstractController
      */
     public function new(Request $request): Response
     {
-        $article = new Article();
+        $article = new Article($this->getUser());
         $form = $this->createForm(ArticleType::class, $article, ['is_granted_disabled' => true]);
         $form->handleRequest($request);
 
