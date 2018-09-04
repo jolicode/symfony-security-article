@@ -27,6 +27,10 @@ class SecurityExtension extends AbstractTypeExtension
             return;
         }
 
+        if ($options['is_granted_disabled']) {
+            return;
+        }
+
         if ($options['is_granted_hide']) {
             $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) use ($options) {
                 if ($this->isGranted($options)) {
@@ -50,6 +54,10 @@ class SecurityExtension extends AbstractTypeExtension
 
     public function finishView(FormView $view, FormInterface $form, array $options)
     {
+        if ($options['is_granted_disabled']) {
+            return;
+        }
+
         if ($this->isGranted($options)) {
             return;
         }
@@ -62,6 +70,7 @@ class SecurityExtension extends AbstractTypeExtension
         $resolver->setDefaults([
             'is_granted_attribute' => null,
             'is_granted_hide' => false,
+            'is_granted_disabled' => false,
         ]);
     }
 

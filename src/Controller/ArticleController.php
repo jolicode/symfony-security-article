@@ -26,12 +26,11 @@ class ArticleController extends AbstractController
 
     /**
      * @Route("/new", name="article_new", methods="GET|POST")
-     * @Security("is_granted('ROLE_ADMIN')")
      */
     public function new(Request $request): Response
     {
         $article = new Article();
-        $form = $this->createForm(ArticleType::class, $article);
+        $form = $this->createForm(ArticleType::class, $article, ['is_granted_disabled' => true]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {

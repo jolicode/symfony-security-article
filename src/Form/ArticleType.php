@@ -18,11 +18,13 @@ class ArticleType extends AbstractType
         $builder
             ->add('title', TextType::class, [
                 'is_granted_attribute' => 'ROLE_ADMIN',
+                'is_granted_disabled' => $options['is_granted_disabled'],
             ])
             ->add('content', TextareaType::class)
             ->add('internalNote', TextType::class, [
                 'is_granted_attribute' => 'ROLE_ADMIN',
                 'is_granted_hide' => true,
+                'is_granted_disabled' => $options['is_granted_disabled'],
                 'required' => false,
             ])
             ->add('author', EntityType::class, [
@@ -38,6 +40,7 @@ class ArticleType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Article::class,
+            'is_granted_disabled' => false,
         ]);
     }
 }

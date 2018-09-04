@@ -33,7 +33,5 @@
         </tbody>
     </table>
 
-    {% if is_granted('ROLE_ADMIN') %}
-        <a href="{{ path('article_new') }}">Create new</a>
-    {% endif %}
+    <a href="{{ path('article_new') }}">Create new</a>
 {% endblock %}
