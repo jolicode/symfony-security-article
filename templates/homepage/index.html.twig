@@ -3,15 +3,7 @@
 {% block title %}Hello!{% endblock %}
 
 {% block body %}
-    <ul>
-        <li>
-            <a href="{{ url('login') }}">Login</a>
-        </li>
-        <li>
-            <a href="{{ url('admin_index') }}">Admin CRUD</a>
-        </li>
-        <li>
-            <a href="{{ url('article_index') }}">Article CRUD</a>
-        </li>
-    </ul>
+    <div class="jumbotron">
+        <h1 class="display-4">Hello, world!</h1>
+    </div>
 {% endblock %}
