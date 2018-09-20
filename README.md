@@ -1,7 +1,7 @@
 # Article: Symfony and Security
 
 This repository is the support of an Article published on
-[https://jolicode.com/blog/](https://jolicode.com/blog/FIXME).
+[our blog](https://jolicode.com/blog/how-to-mix-security-and-form-with-symfony).
 
 
 ## Installation
