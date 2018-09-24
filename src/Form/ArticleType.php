@@ -39,7 +39,7 @@ class ArticleType extends AbstractType
                 'required' => false,
             ])
             ->add('category', ChoiceType::class, [
-                'choices' => $this->buildCategoryChoices(),
+                'choices' => $this->buildCategoryChoices($options),
                 'is_granted_attribute' => 'ROLE_ADMIN',
                 'is_granted_disabled' => $options['is_granted_disabled'],
             ])
@@ -54,8 +54,14 @@ class ArticleType extends AbstractType
         ]);
     }
 
-    private function buildCategoryChoices(): array
+    private function buildCategoryChoices(array $options): array
     {
+        // special case: if the form is in an "edit" mode, we return all
+        // categories since the the form will be disabled anyway
+        if (!$options['is_granted_disabled']) {
+            return array_combine(Article::CATEGORIES, Article::CATEGORIES);
+        }
+
         $token = $this->tokenStorage->getToken();
         if (!$token) {
             return [];
